@@ -1,0 +1,14 @@
+# model name
+model: MLP
+
+# param_grid for GridSearchCV
+param_grid:
+  module__hid_dim: [64, 128, 256, 512]
+  module__dropout: [0, 0.1, 0.2, 0.3, 0.5]
+  lr: [0.001, 0.01, 0.05]
+  max_epochs: [20, 50, 100, 200]
+
+# args for GridSearchCV
+cv: 5
+scoring: neg_mean_absolute_error
+verbose: 1
