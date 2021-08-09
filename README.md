@@ -11,6 +11,8 @@ In this project I've explored the PK data and tried to fit models on 2 PK parame
  
 Although other PK parameters, e.g. half-life (t<sub>1/2</sub>), mean residence time (MRT) are not modeled here, the package `ivpk` is easily extendable to these targets.
 
+Considering data missingness, the 2 targets were predicted separately to not waste data with missing target value.
+
 ### Repository Structure
 This repository consists of several directories, jupyter notebooks and python scripts:
 ```
@@ -54,13 +56,86 @@ Command line tools for execution on cluster:
 2. [train_mlp.py](train_mlp.py): train MLP head by given hyperparameters, train and val set defined by fixed seed for reproducibility.
 3. [pred_from_raw.py](pred_from_raw.py): make prediction from raw data, using the best estimator so far.
 
+Making prediction using example data:
+```bash
+python pred_from_raw.py --csv data/example_for_pred.csv
+```
+Note that the column names should be exact but column order is not strict.
+
+
+### Requirements
+- rdkit
+- pytorch
+- numpy
+- pandas
+- scikit-learn
+- skorch
+- matplotlib
+- seaborn
+- missingno
+
 ## Data
 
+### Data cleaning
+Prune data:
+
+- 2 records (550, 554) share same SMILES but different VDss and CL
+- 10 records have SMILES string which cannot be recognized by rdkit
+
+Use the remaining 1340 records for modeling.
+
+### Train-val-test split
+Here we'll use historical data to predict new data. Compounds with *Year of first disclosure* >= 2000 are our test set. Train - validation split on the remaining was done by `sklearn.model_selection.train_test_split` with fixed `random_seed` for reproducibility.
+
+### Input data
+Input data comes from 2 parts:
+- Preprocessed physiochemical values (provided in raw data)
+- Fingerprints
+
+We chose Morgan Fingerprint at radius 2, bit size 256 for later models after several experiments. We didn't use the default bit size 2048 since the training data size is below 1000.
 
 ## Methods
 
+Models tested for baseline: Linear regressor, LASSO regressor, Random Forest Regressor, SVR, MLP.
+
+LASSO, Random Forest regressor and MLP have hyperparameters tuned by GridSearchCV on train + validation set (test set remained hidden). MLP regressor head with optimized hyperparameters was retrained on training set, using validation set for early stopping.
+
+Predict on test set by models registered in [models/model_registration.yaml](models/model_registration.yaml), best results were submitted.
+
 ## Results
 
-Leaderboard:
+Leaderboards were generated in [Model_selection notebook](Model_selection.ipynb) and saved to [doc](doc/) folder. Leaderboard in CSV format were converted to markdown on [tableconvert.com](https://tableconvert.com/).
+
+### Leaderboard
+
+Values were rounded to 4 digits.
+
+Note:
+1. GridSearchCV models were refit on train + val set, so the metrics for train / val is not comparable with others.
+2. Only GridSeachCV models have the MAE_cv derived from their `best_score_`.
+3. *mlp_* models other than *mlp_gridsearch* were retrained only on training set, using best hyperparameters from gridsearch.
+
+
+#### Leaderboard for VDss
+
+|                   | MAE_train | Pearsonr_train | MAE_val | Pearsonr_val | MAE_test | Pearsonr_test | MAE_cv |
+|-------------------|-----------|----------------|---------|--------------|----------|---------------|--------|
+| lasso02_morgan256 | 1.0541    | 0.7544         | 1.1299  | 0.7475       | 1.4856   | 0.5478        |        |
+| rfreg_morgan256   | 0.3988    | 0.974          | 1.0749  | 0.7626       | 1.4318   | 0.5206        |        |
+| lasso_gridsearch  | 1.0734    | 0.7406         | 1.0568  | 0.7882       | 1.4591   | 0.5686        | 1.1635 |
+| **rfreg_gridsearch**  | 0.3849    | 0.979          | 0.3869  | 0.9815       | **1.3808**   | **0.5748**        | 1.0687 |
+| mlp_gridsearch    | 0.6163    | 0.9313         | 0.6037  | 0.9385       | 1.5647   | 0.5129        | 1.1679 |
+| mlp_morgan256     | 0.9018    | 0.8274         | 0.9257  | 0.8313       | 1.4835   | 0.5386        |        |
+| mlp_morgan2048    | 0.8838    | 0.8366         | 0.9155  | 0.8427       | 1.3971   | 0.58          |        |
+
+
+#### Leaderboard for CL
+
+|                  | MAE_train | Pearsonr_train | MAE_val | Pearsonr_val | MAE_test | Pearsonr_test | MAE_cv |
+|------------------|-----------|----------------|---------|--------------|----------|---------------|--------|
+| rfreg_morgan256  | 0.5166    | 0.9735         | 1.3942  | 0.4578       | 1.5448   | 0.2333        |        |
+| rfreg_gridsearch | 0.5054    | 0.9786         | 0.5041  | 0.9749       | 1.5147   | 0.2719        | 1.3899 |
+| mlp_gridsearch   | 1.3834    | 0.5903         | 1.3711  | 0.5618       | 1.5021   | 0.2762        | 1.5173 |
+| **mlp_morgan256**    | 1.4023    | 0.5641         | 1.3804  | 0.5398       | **1.4894**   | **0.2893**        |        |
 
 ## Discussion
