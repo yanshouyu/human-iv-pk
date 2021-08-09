@@ -1,0 +1,5 @@
+,MAE_train,Pearsonr_train,MAE_val,Pearsonr_val,MAE_test,Pearsonr_test,MAE_cv
+rfreg_morgan256,0.5166,0.9735,1.3942,0.4578,1.5448,0.2333,
+rfreg_gridsearch,0.5054,0.9786,0.5041,0.9749,1.5147,0.2719,1.3899
+mlp_gridsearch,1.3834,0.5903,1.3711,0.5618,1.5021,0.2762,1.5173
+mlp_morgan256,1.4023,0.5641,1.3804,0.5398,1.4894,0.2893,
