@@ -1,9 +1,11 @@
 """CML tool for making prediction on new data.
-Required columns in csv input: [
+Required columns in csv input (`[ivpk.data.SMILES_COL] + ivpk.data.X_COLS`): 
+[
     'SMILES', 
     'MW', 'HBA', 'HBD', 'TPSA_NO', 'RotBondCount', 
     'moka_ionState7.4', 'MoKa.LogP', 'MoKa.LogD7.4'
 ]
+Column order is not strict.
 
 Current best model for VDss: models/GridSearchCV/VDss_rfreg_gridsearch.pkl
 Current best model for CL: models/CL_mlp.pkl
