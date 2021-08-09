@@ -94,6 +94,8 @@ Input data comes from 2 parts:
 
 We chose Morgan Fingerprint at radius 2, bit size 256 for later models after several experiments. We didn't use the default bit size 2048 since the training data size is below 1000.
 
+RDkit fingerprint is also available by just change the argument `fpType` from *morgan* to *rdkit* in data methods. For time consideration I didn't used RDkit fingerprints.
+
 ## Methods
 
 Models tested for baseline: Linear regressor, LASSO regressor, Random Forest Regressor, SVR, MLP.
@@ -138,4 +140,43 @@ Note:
 | mlp_gridsearch   | 1.3834    | 0.5903         | 1.3711  | 0.5618       | 1.5021   | 0.2762        | 1.5173 |
 | **mlp_morgan256**    | 1.4023    | 0.5641         | 1.3804  | 0.5398       | **1.4894**   | **0.2893**        |        |
 
+### Submission
+
+#### VDss test set
+
+![VDss testset](figures/VDss_testset.png)
+
+#### CL test set
+
+![CL testset](figures/CL_testset.png)
+
+
 ## Discussion
+
+### Modeling performance
+
+Clearly the results are not satisfactory, especially for CL. MAE about 1.38-1.49 on log2 value means a 2.6-2.8 fold average error.
+
+CL is a high-bias case which tells us that physiochemical properties + fingerprint might not be sufficient.
+
+### Feature importance
+
+For VDss, the best predictor is a Random Forest Regressor, we can examine its feature importance.
+
+![VDss_feature_importance](figures/VDss_feature_importance.png)
+
+Clearly, the physiochemical properties are far more important than fingerprints. 
+
+We can highlight the most important bit on chemicals for model interpretation, for example:
+![Bit_highlight_Cephapirin](figures/highlight_FP/Cephapirin_bit138_morgan256.png)
+
+Or:
+![Bit_highlight_Inopamidol](figures/highlight_FP/Iopamidol_bit138_morgan256.png)
+
+### Future works
+
+This project is just a proof-of-concept. A lot can be improved. 
+
+From modeling perspective, we can explore graphic-neural-networks. Established frameworks, e.g. [chemprop](https://github.com/chemprop/chemprop), might be a good starting point.  
+From data perspective, we should examine which compounds are easier to predict and which are hard. I've saved those hard samples (absolute error > 1) to *results/* folder.  
+For model serving, we can try implementing physiochemical value calculation so that input can only be SMILES.
