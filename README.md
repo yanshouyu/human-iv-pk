@@ -32,7 +32,7 @@ This repository consists of several directories, jupyter notebooks and python sc
 #### Directories
 - configs: YAML configuration on model and GridSearchCV.
 - data: raw, intermidiate and example data
-- doc: article, sup table, leaderboard
+- doc: leaderboard, slide doc for presentation
 - figures: visualization results
 - `ivpk`: python package for this project
 - models: saved models
