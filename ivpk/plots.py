@@ -4,8 +4,13 @@ from rdkit import Chem
 from rdkit.Chem.rdchem import Mol
 from rdkit.Chem import Draw
 from rdkit.Chem.Draw import rdMolDraw2D
-from typing import Union
+import numpy as np
+from typing import Union, Tuple
+from matplotlib import pyplot as plt
 from .utils import morgan_bit_atoms
+from .evalutaion import Evaluation
+
+#------------ chem plot -------------#
 
 def draw_highlighted_bit(
     fname: str, 
@@ -36,3 +41,39 @@ def draw_highlighted_bit(
     rdMolDraw2D.PrepareAndDrawMolecule(d, mol, highlightAtoms=hl_atoms, highlightBonds=hl_bonds)
     d.FinishDrawing()
     d.WriteDrawingText(fname)
+
+
+#------------ stat plot -------------#
+
+def plot_model_eval(ev: Evaluation):
+    def plot_scatter(x, y, lim: Tuple):
+        plt.plot(x, y, ".")
+        plt.xlim(*lim)
+        plt.ylim(*lim)
+        plt.xlabel("real")
+        plt.ylabel("predicted")
+    
+    # set lim
+    min_val = np.min([ev.y_val, ev.y_val_pred])
+    max_val = np.max([ev.y_val, ev.y_val_pred])
+    interval = max_val - min_val
+    lim = (
+        np.floor(min_val - 0.05*interval), 
+        np.ceil(max_val + 0.05*interval)
+    )
+
+    plt.figure(figsize=(10, 5))
+    plt.subplot(121)
+    plot_scatter(ev.y_val, ev.y_val_pred, lim)
+    plt.title((
+        "validation", 
+        f"MAE: {ev.evaluation['MAE_val']:.3f},", 
+        f"Pearson: {ev.evaluation['Pearsonr_val']:.3f}"
+    ))
+    plt.subplot(122)
+    plot_scatter(ev.y_train_val, ev.y_train_val_pred, lim)
+    plt.title((
+        f"CV pred", 
+        f"MAE: {ev.evaluation['MAE_cv']:.3f}", 
+        f"Pearson: {ev.evaluation['Pearsonr_cv']:.3f}"
+    ))
