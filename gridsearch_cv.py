@@ -22,7 +22,6 @@ def select_model(model_name: str):
     elif model_name == "RFreg":
         return RandomForestRegressor()
     elif model_name == "MLP":
-        # TODO: skorch wrapped MLP
         reg = NeuralNetRegressor(
             ivpk.models.SimpleRegHead, 
             module__in_dim=267, 
