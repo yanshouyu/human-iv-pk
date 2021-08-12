@@ -13,6 +13,17 @@ Although other PK parameters, e.g. half-life (t<sub>1/2</sub>), mean residence t
 
 Considering data missingness, the 2 targets were predicted separately to not waste data with missing target value.
 
+### Requirements
+- rdkit
+- pytorch
+- numpy
+- pandas
+- scikit-learn
+- skorch
+- matplotlib
+- seaborn
+- missingno
+
 ### Repository Structure
 This repository consists of several directories, jupyter notebooks and python scripts:
 ```
@@ -24,9 +35,9 @@ This repository consists of several directories, jupyter notebooks and python sc
 ├── ivpk/
 ├── models/
 ├── results/
-└── submission/
-└── *.ipynb
-└── *.py
+├── submission/
+├── *.ipynb
+├── *.py
 └── ...
 ```
 #### Directories
@@ -62,18 +73,6 @@ python pred_from_raw.py --csv data/example_for_pred.csv
 ```
 Note that the column names should be exact but column order is not strict.
 
-
-### Requirements
-- rdkit
-- pytorch
-- numpy
-- pandas
-- scikit-learn
-- skorch
-- matplotlib
-- seaborn
-- missingno
-
 ## Data
 
 ### Data cleaning
@@ -94,7 +93,7 @@ Input data comes from 2 parts:
 
 We chose Morgan Fingerprint at radius 2, bit size 256 for later models after several experiments. We didn't use the default bit size 2048 since the training data size is below 1000.
 
-RDkit fingerprint is also available by just change the argument `fpType` from *morgan* to *rdkit* in data methods. For time consideration I didn't used RDkit fingerprints.
+RDkit fingerprint is also available by just change the argument `fpType` from *morgan* to *rdkit* in data methods. For time consideration I only tested morgan fingerprints.
 
 ## Methods
 
@@ -170,7 +169,8 @@ Clearly, the physiochemical properties are far more important than fingerprints.
 We can highlight the most important bit on chemicals for model interpretation, for example:
 ![Bit_highlight_Cephapirin](figures/highlight_FP/Cephapirin_bit138_morgan256.png)
 
-Or:
+Or:  
+
 ![Bit_highlight_Inopamidol](figures/highlight_FP/Iopamidol_bit138_morgan256.png)
 
 ### Future works
@@ -179,4 +179,7 @@ This project is just a proof-of-concept. A lot can be improved.
 
 From modeling perspective, we can explore graphic-neural-networks. Established frameworks, e.g. [chemprop](https://github.com/chemprop/chemprop), might be a good starting point.  
 From data perspective, we should examine which compounds are easier to predict and which are hard. I've saved those hard samples (absolute error > 1) to *results/* folder.  
-For model serving, we can try implementing physiochemical value calculation so that input can only be SMILES.
+For model serving, we can try implementing physiochemical value calculation so that input can only be SMILES.  
+From feature perspective, other descriptors can be tested. For example, we could generate a lot of descriptors by [Mordred](https://jcheminf.biomedcentral.com/articles/10.1186/s13321-018-0258-y).
+
+It is a common requirement to build a framework that can efficiently link tasks, data and models. A systematic pipeline, [ATOM Modeling PipeLine (AMPL)](https://github.com/ATOMconsortium/AMPL), could be a reference.
