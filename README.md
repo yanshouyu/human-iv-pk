@@ -91,9 +91,11 @@ Input data comes from 2 parts:
 - Preprocessed physiochemical values (provided in raw data)
 - Fingerprints
 
+Available fingerprints are: Morgan (radius fixed as 2, bit size adjustable), RDkit fingerprint, MACCS keys. To use different fingerprint method for input, just change the argument `fpType`. For time consideration I only tested morgan fingerprints.
+
 We chose Morgan Fingerprint at radius 2, bit size 256 for later models after several experiments. We didn't use the default bit size 2048 since the training data size is below 1000.
 
-RDkit fingerprint is also available by just change the argument `fpType` from *morgan* to *rdkit* in data methods. For time consideration I only tested morgan fingerprints.
+It seems the MACCS keys might be a better input method than Morgan FP after a small experiment in scratchpad notebook.
 
 ## Methods
 

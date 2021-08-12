@@ -1,11 +1,13 @@
 """Chemical utils module.
 """
 import numpy as np
-from pandas.core.algorithms import isin
 from rdkit import Chem
 from rdkit.Chem.rdchem import Mol
 from rdkit.DataStructs.cDataStructs import ConvertToNumpyArray
-from rdkit.Chem.rdMolDescriptors import GetMorganFingerprintAsBitVect
+from rdkit.Chem.rdMolDescriptors import (
+    GetMorganFingerprintAsBitVect, 
+    GetMACCSKeysFingerprint, 
+)
 from rdkit import RDLogger
 RDLogger.DisableLog("rdApp.*")
 from typing import List, Tuple, Union
@@ -25,8 +27,8 @@ def get_fp_mat(
     """Generate fingerprint at given fpSize. 
     Args:
         mols: Element of list can be either Mol object or SMILES string.
-        fpType: fingerprint type, {morgan, rdkit}
-        fpSize: bit vector length.
+        fpType: fingerprint type, {morgan, rdkit, maccs}
+        fpSize: bit vector length. If fpType is maccs, fpSize is fixed to 167.
     Returns:
         2d array, shape (len(mols), fpSize), dtype 'float64'
     """
@@ -35,11 +37,17 @@ def get_fp_mat(
         mols = [Chem.MolFromSmiles(sm) for sm in mols]
     elif not isinstance(mols[0], Mol):
         raise ValueError(f"element type incompatible, got {type(mols[0])}")
+    
+    if fpType == 'maccs':
+        fpSize = 167
+    
     arr = np.zeros((len(mols), fpSize))
     if fpType == "morgan":
         fp_func = lambda mol: GetMorganFingerprintAsBitVect(mol, 2, nBits=fpSize)
     elif fpType == 'rdkit':
         fp_func = lambda mol: Chem.RDKFingerprint(mol, fpSize=fpSize)
+    elif fpType == 'maccs':
+        fp_func = lambda mol: GetMACCSKeysFingerprint(mol)
     else:
         raise NotImplementedError(f"Fingerprint {fpType} not implemented")
     
