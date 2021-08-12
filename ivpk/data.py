@@ -69,9 +69,7 @@ def process_log2(df: pd.DataFrame) -> pd.DataFrame:
         newdf[colname] = np.log2(df[colname] + 1)
     return newdf
 
-processed_df = process_log2(upper_clip_outliers(pruned_df))[
-    [SMILES_COL] + X_COLS
-]
+processed_df = process_log2(upper_clip_outliers(pruned_df))
 
 x_preprocessor = ColumnTransformer([
     ("stdscl", StandardScaler(), ['MoKa.LogP', 'MoKa.LogD7.4', 'MW', 'TPSA_NO']),
@@ -83,7 +81,9 @@ x_preprocessor = ColumnTransformer([
 ], n_jobs=-1)
 
 # fit the x_processor with global distribution
-proc_x = x_preprocessor.fit_transform(processed_df)
+proc_x = x_preprocessor.fit_transform(processed_df[
+    [SMILES_COL] + X_COLS
+])
 
 #----------- Y variables --------------#
 def get_processed_y(target: str, df: pd.DataFrame = pruned_df) -> pd.Series:
