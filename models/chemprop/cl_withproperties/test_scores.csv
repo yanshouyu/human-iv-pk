@@ -1,0 +1,2 @@
+Task,Mean mae,Standard deviation mae,Fold 0 mae,Mean mse,Standard deviation mse,Fold 0 mse,Mean r2,Standard deviation r2,Fold 0 r2
+log2VDss,1.5768878112398999,0.0,1.5768878112398999,4.249268949883115,0.0,4.249268949883115,-0.017575186954807975,0.0,-0.017575186954807975
