@@ -105,6 +105,8 @@ LASSO, Random Forest regressor and MLP have hyperparameters tuned by GridSearchC
 
 Predict on test set by models registered in [models/model_registration.yaml](models/model_registration.yaml), best results were submitted.
 
+[Chemprop](https://github.com/chemprop/chemprop) was applied on same set of train-val-test split (no ensemble). Hyperparameters were default. Chemprop was used on either SMILES-ony or SMILES & preprocessed-physiochemical properties (see leaderboard).
+
 ## Results
 
 Leaderboards were generated in [Model_selection notebook](Model_selection.ipynb) and saved to [doc](doc/) folder. Leaderboard in CSV format were converted to markdown on [tableconvert.com](https://tableconvert.com/).
@@ -117,6 +119,7 @@ Note:
 1. GridSearchCV models were refit on train + val set, so the metrics for train / val is not comparable with others.
 2. Only GridSeachCV models have the MAE_cv derived from their `best_score_`.
 3. *mlp_* models other than *mlp_gridsearch* were retrained only on training set, using best hyperparameters from gridsearch.
+4. chemprop training log doesn't provide overall training loss, just batch-wise loss at a default frequency (10 batches).
 
 
 #### Leaderboard for VDss
@@ -130,6 +133,9 @@ Note:
 | mlp_gridsearch    | 0.6163    | 0.9313         | 0.6037  | 0.9385       | 1.5647   | 0.5129        | 1.1679 |
 | mlp_morgan256     | 0.9018    | 0.8274         | 0.9257  | 0.8313       | 1.4835   | 0.5386        |        |
 | mlp_morgan2048    | 0.8838    | 0.8366         | 0.9155  | 0.8427       | 1.3971   | 0.58          |        |
+| chemprop_smiles    |           |                | 1.0718  | 0.7639       | 1.4932   | 0.3733        |        |
+| chemprop_properties|           |                | 0.9834  | 0.7868       | 1.3801   | 0.4968        |        |
+
 
 
 #### Leaderboard for CL
@@ -140,6 +146,9 @@ Note:
 | rfreg_gridsearch | 0.5054    | 0.9786         | 0.5041  | 0.9749       | 1.5147   | 0.2719        | 1.3899 |
 | mlp_gridsearch   | 1.3834    | 0.5903         | 1.3711  | 0.5618       | 1.5021   | 0.2762        | 1.5173 |
 | **mlp_morgan256**    | 1.4023    | 0.5641         | 1.3804  | 0.5398       | **1.4894**   | **0.2893**        |        |
+| chemprop_smiles    |           |                | 1.3454  | 0.5406       | 1.4943   | 0.2559        |        |
+| chemprop_properties|           |                | 1.3447  | 0.5348       | 1.5768   | 0.1326        |        |
+
 
 ### Submission
 
@@ -160,6 +169,8 @@ Clearly the results are not satisfactory, especially for CL. MAE about 1.38-1.49
 
 CL is a high-bias case which tells us that physiochemical properties + fingerprint might not be sufficient.
 
+Chemprop is comparable with our best models. Here we only used SMILES (and pre-calculated physiochemical properties) as input. If fingerprint was added, performance might increase a little. Examine the training log we can see the high-variance issue, thus regularization on chemprop models could be helpful. 
+
 ### Feature importance
 
 For VDss, the best predictor is a Random Forest Regressor, we can examine its feature importance.
@@ -179,9 +190,17 @@ Or:
 
 This project is just a proof-of-concept. A lot can be improved. 
 
-From modeling perspective, we can explore graphic-neural-networks. Established frameworks, e.g. [chemprop](https://github.com/chemprop/chemprop), might be a good starting point.  
-From data perspective, we should examine which compounds are easier to predict and which are hard. I've saved those hard samples (absolute error > 1) to *results/* folder.  
-For model serving, we can try implementing physiochemical value calculation so that input can only be SMILES.  
-From feature perspective, other descriptors can be tested. For example, we could generate a lot of descriptors by [Mordred](https://jcheminf.biomedcentral.com/articles/10.1186/s13321-018-0258-y).
+From modeling perspective:
+- Chemprop is a good starting point on exploring graphic-neural-networks. Here I just dipped the water but there's definitely more to explore, either using chemprop's elegant framework or adopting new message passing algorithms. 
+- Beside GNN, SMILES can be interpreted as string suitable for language models. A staring point could be the [smiles_transformer](https://github.com/DSPsleeporg/smiles-transformer).
 
-It is a common requirement to build a framework that can efficiently link tasks, data and models. A systematic pipeline, [ATOM Modeling PipeLine (AMPL)](https://github.com/ATOMconsortium/AMPL), could be a reference.
+From data perspective:
+- We could explore public datasets for additional information to support modeling, e.g. [ChEMBL](https://www.ebi.ac.uk/chembl/). 
+- Other descriptors can be tested. For example, we could generate descriptors by [Mordred](https://jcheminf.biomedcentral.com/articles/10.1186/s13321-018-0258-y) and evaluate their relavance with PK targets.
+- It is benefitial to examine which compounds are easier to predict and which are hard. I've saved those hard samples (absolute error > 1) to *results/* folder.  
+
+For model serving:
+- We can try implementing physiochemical value calculation so that we only need SMILES as the only input.
+
+
+It is a common requirement to build a framework that can efficiently link tasks, data and models. Beside the elegant chemprop, a systematic pipeline, [ATOM Modeling PipeLine (AMPL)](https://github.com/ATOMconsortium/AMPL), could also be a reference.
