@@ -83,6 +83,8 @@ def main(args):
         "log2CL": cl_pred
     })
     pred_df.to_csv(args.output, index=False)
+    if args.output != sys.stdout:
+        args.output.close()
     logger.info("result written. All completed.")
 
 

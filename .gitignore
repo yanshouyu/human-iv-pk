@@ -134,6 +134,7 @@ dmypy.json
 
 # PDF and Other documents
 doc/*.pdf
+doc/*.pptx
 
 # scratchpad notebook
 _scratchpad.ipynb
