@@ -120,6 +120,7 @@ Note:
 2. Only GridSeachCV models have the MAE_cv derived from their `best_score_`.
 3. *mlp_* models other than *mlp_gridsearch* were retrained only on training set, using best hyperparameters from gridsearch.
 4. chemprop training log doesn't provide overall training loss, just batch-wise loss at a default frequency (10 batches).
+5. Pearson correlation coefficient were not calculated yet. The coefficient of determination (r2) can be found in chemprop training log.
 
 
 #### Leaderboard for VDss
@@ -133,8 +134,8 @@ Note:
 | mlp_gridsearch    | 0.6163    | 0.9313         | 0.6037  | 0.9385       | 1.5647   | 0.5129        | 1.1679 |
 | mlp_morgan256     | 0.9018    | 0.8274         | 0.9257  | 0.8313       | 1.4835   | 0.5386        |        |
 | mlp_morgan2048    | 0.8838    | 0.8366         | 0.9155  | 0.8427       | 1.3971   | 0.58          |        |
-| chemprop_smiles    |           |                | 1.0718  | 0.7639       | 1.4932   | 0.3733        |        |
-| chemprop_properties|           |                | 0.9834  | 0.7868       | 1.3801   | 0.4968        |        |
+| chemprop_smiles    |           |                | 1.0718  |             | 1.4932   |               |        |
+| chemprop_properties|           |                | 0.9834  |             | 1.3801   |               |        |
 
 
 
@@ -146,8 +147,8 @@ Note:
 | rfreg_gridsearch | 0.5054    | 0.9786         | 0.5041  | 0.9749       | 1.5147   | 0.2719        | 1.3899 |
 | mlp_gridsearch   | 1.3834    | 0.5903         | 1.3711  | 0.5618       | 1.5021   | 0.2762        | 1.5173 |
 | **mlp_morgan256**    | 1.4023    | 0.5641         | 1.3804  | 0.5398       | **1.4894**   | **0.2893**        |        |
-| chemprop_smiles    |           |                | 1.3454  | 0.5406       | 1.4943   | 0.2559        |        |
-| chemprop_properties|           |                | 1.3447  | 0.5348       | 1.5768   | 0.1326        |        |
+| chemprop_smiles    |           |                | 1.3454  |         | 1.4943   |          |        |
+| chemprop_properties|           |                | 1.3447  |         | 1.5768   |          |        |
 
 
 ### Submission
