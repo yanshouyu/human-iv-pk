@@ -120,7 +120,7 @@ Note:
 2. Only GridSeachCV models have the MAE_cv derived from their `best_score_`.
 3. *mlp_* models other than *mlp_gridsearch* were retrained only on training set, using best hyperparameters from gridsearch.
 4. chemprop training log doesn't provide overall training loss, just batch-wise loss at a default frequency (10 batches).
-5. Pearson correlation coefficient were not calculated yet. The coefficient of determination (r2) can be found in chemprop training log.
+5. chemprop's Pearson correlation coefficient were not calculated yet. The coefficient of determination (r2) can be found in chemprop training log.
 
 
 #### Leaderboard for VDss
